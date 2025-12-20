@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title>vr-autumn</title></head><body>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://code4fukui.github.io/three.js/build/three.module.js",
+    "three/addons/": "https://code4fukui.github.io/three.js/examples/jsm/",
+    "three/nodes": "https://code4fukui.github.io/three.js/examples/jsm/nodes/Nodes.js"
+  }
+}
+</script>
+<main><h1>ar-clock</h1>
+<a href=https://github.com/code4fukui/ar-clock/>src on GitHub</a><br>
+</main>
+<style>
+main {
+  position: fixed;
+  top: 2em;
+  left: 2em;
+  background-color: rgba(0, 0, 0, .3);
+  padding: 1em;
+  color: white;
+}
+a {
+  color: white !important;
+}
+</style>
+
+<script type="module">
+import { THREE, scene, camera, renderer, ambientLight, directionalLight } from "https://code4fukui.github.io/egxr.js/egxr.js";
+//import { loadGLTF } from "https://code4fukui.github.io/vr-beetle/loadGLTF.js";
+//import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
+import { PCControl } from "https://code4fukui.github.io/vr-beetle/PCControl.js";
+import { Time } from "https://js.sabae.cc/DateTime.js";
+
+// control
+const pcctrl = new PCControl(camera, renderer.domElement);
+
+// light
+ambientLight.intensity = 2.0; // 環境光（全体を均一に明るくする）
+directionalLight.intensity = 7.0; // 平行光
+directionalLight.position.set(2, 10, 1); // 上から光
+
+// model
+const makeTextPlane = (w, h) => {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = canvas.width / w * h;
+
+  const ctx = canvas.getContext("2d");
+
+
+  // three.js 用テクスチャ
+  const texture = new THREE.CanvasTexture(canvas);
+
+  /* ===== Plane に貼る ===== */
+  const geometry = new THREE.PlaneGeometry(w, h);
+  const material = new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    depthTest: false,   // ← 奥行き無視
+  });
+  const plane = new THREE.Mesh(geometry, material);
+  plane.setText = (s) => {
+    // 背景
+    //ctx.fillStyle = "#f22";
+    //ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // テキスト
+    ctx.fillStyle = "#0a0";
+    ctx.font = "bold 64px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(s, canvas.width / 2, canvas.height / 2);
+
+    texture.needsUpdate = true;
+  };
+  plane.setText("Hello three.js");
+  return plane;
+};
+const w = 0.1;
+const h = 0.03;
+const plane = makeTextPlane(w, h);
+plane.position.set(0, 0, 0);
+//camera.add(plane);
+//camera.position.set(0, 0, 0);
+//console.log(camera)
+scene.add(plane);
+
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const delta = clock.getDelta();
+  //models.forEach((m, idx) => m.mixer?.update(delta));
+  pcctrl.update(delta);
+	renderer.render(scene, camera);
+  const t = new Time();
+  plane.setText(t.toString());
+});
+</script>
+</body></html>
