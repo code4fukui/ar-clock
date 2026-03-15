@@ -1,5 +1,7 @@
 # ar-clock
 
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
+
 An augmented reality (AR) clock project.
 
 ## Features
