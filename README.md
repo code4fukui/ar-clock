@@ -22,4 +22,4 @@ git clone https://github.com/code4fukui/ar-clock.git
 The clock will be displayed as a floating text plane in the 3D scene. You can use the mouse to interact with the scene and control the camera.
 
 ## License
-This project is licensed under the MIT License.
+MIT License — see [LICENSE](LICENSE).
